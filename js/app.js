@@ -1,11 +1,29 @@
 'use strict'
 
-let listOfProducts = [];
-let productSectionEl = document.getElementById('product-container');
-let voteCountSectionEl = document.getElementById('voting-rounds-container');
+// Global Lists 
+let listOfProducts = new Array();
+let listOfPrevRender = new Array;
+let listOfUsedProducts = new Array();
+let listOfRandomProductsToRender = new Array();
+
+// Global Variables 
 let voteCount = 25;
+
+// DOM Elements 
 let resultButtonEl = document.getElementById('results-button');
 let resultsSectionEl = document.getElementById('results-container');
+let canvasEl = document.getElementById('chart');
+let productSectionEl = document.getElementById('product-container');
+let voteCountSectionEl = document.getElementById('voting-rounds-container');
+
+let chart = null;
+
+
+
+// get random number, if image get from random number, while loop run 6 times, use random number to fill array, if array does not already include the random product, push it to rendering array of 6 unique items, 
+
+// if product[1] !== product[2] && product[1] !== product[3]
+
 
 function Product(name, imagePath) {
     this.name = name;
@@ -54,7 +72,6 @@ new Product('scissors', 'scissors.jpg');
 new Product('shark', 'shark.jpg');
 new Product('sweep', 'sweep.png');
 new Product('tauntaun', 'tauntaun.jpg');
-new Product('sweep', 'sweep.png');
 new Product('unicorn', 'unicorn.jpg');
 new Product('water-can', 'water-can.jpg');
 new Product('wine-glass', 'wine-glass.jpg');
@@ -63,30 +80,50 @@ function getRandomProduct() {
     return Math.floor(Math.random() * listOfProducts.length);
 };
 
-function renderRandomThree(arr) {
+function compareArrays(firstArr, secondArr) {
+    console.log(firstArr.some(product => secondArr.includes(product)))
 
-    let randomProducts = [];
+    return firstArr.some(product => secondArr.includes(product));
+}
+
+function getRandomThree(arr) {
+
+    console.log(`start of get randomThree func: ${listOfUsedProducts[0]}`)
+
+    listOfRandomProductsToRender = [];
 
     for (let i = 0; i < 3; i++) {
-        randomProducts[i] = arr[getRandomProduct()];
+        listOfRandomProductsToRender[i] = arr[getRandomProduct()];
     };
 
-    while (randomProducts[0] === randomProducts[1]) {
-        randomProducts[0] = arr[getRandomProduct()];
+    while (listOfRandomProductsToRender[0] === listOfRandomProductsToRender[1]) {
+        listOfRandomProductsToRender[0] = arr[getRandomProduct()];
     };
 
-    while (randomProducts[1] === randomProducts[2]) {
-        randomProducts[1] = arr[getRandomProduct()];
+    while (listOfRandomProductsToRender[1] === listOfRandomProductsToRender[2]) {
+        listOfRandomProductsToRender[1] = arr[getRandomProduct()];
     };
 
-    while (randomProducts[0] === randomProducts[2]) {
-        randomProducts[2] = arr[getRandomProduct()];
+    while (listOfRandomProductsToRender[0] === listOfRandomProductsToRender[2]) {
+        listOfRandomProductsToRender[2] = arr[getRandomProduct()];
     };
 
-    for (let product of randomProducts) {
+
+
+    listOfUsedProducts = [...listOfRandomProductsToRender]
+}
+
+
+function renderRandomThree(array) {
+
+    for (let product of array) {
+        console.log(`product rendered: ${product.name}`)
         product.render();
     };
+
 };
+
+
 
 function addEventListeners(arr) {
     for (let item of arr) {
@@ -94,23 +131,32 @@ function addEventListeners(arr) {
     }
 };
 
-renderRandomThree(listOfProducts);
 
-let renderedElements = document.querySelectorAll('img');
-console.log(renderedElements)
+
 
 function handleClick(event) {
     if (voteCount > 0) {
-        console.log(event.target.id)
         listOfProducts.forEach((product) => {
             if (event.target.id === product.name) {
                 product.timesClicked++;
             }
         })
 
+        listOfPrevRender = [...listOfUsedProducts];
+
         voteCount -= 1;
         productSectionEl.innerHTML = '';
-        renderRandomThree(listOfProducts);
+
+        getRandomThree(listOfProducts);
+
+        while (compareArrays(listOfPrevRender, listOfRandomProductsToRender)) {
+            getRandomThree(listOfProducts);
+        }
+        
+        renderRandomThree(listOfRandomProductsToRender)
+
+        console.log(`list of prev img in click func AFTER renderrando3 func called: ${listOfPrevRender[0]}`);
+
         renderedElements = document.querySelectorAll('img');
         addEventListeners(renderedElements);
     }
@@ -118,26 +164,51 @@ function handleClick(event) {
 
 function handleResultClick() {
 
-    let ul = document.createElement('ul');
-    let liData = [];
-
-    resultsSectionEl.innerHTML = '';
+    let clickData = [];
+    let viewData = [];
+    let nameValues = [];
 
     for (let i = 0; i < listOfProducts.length; i++) {
-        let li = document.createElement('li');
-
-        liData[i] = `${listOfProducts[i].name} had ${listOfProducts[i].timesClicked} votes, and was seen ${listOfProducts[i].timesShown} times.`
-
-        li.innerText = liData[i]
-
-        ul.appendChild(li);
+        nameValues.push(listOfProducts[i].name);
+        clickData.push(listOfProducts[i].timesClicked)
+        viewData.push(listOfProducts[i].timesShown)
     }
 
-    resultsSectionEl.append(ul);
 
-}
+    if (voteCount === 0) {
+        chart = new Chart(canvasEl, {
+            type: 'bar',
+            data: {
+                labels: nameValues,
+                datasets: [{
+                    label: '# of Votes',
+                    data: clickData,
+                    borderWidth: 1
+                }, {
+                    label: '# of Views',
+                    data: viewData,
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    } else {
+        alert(`You have ${voteCount} votes left!`)
+    }
+};
 
+
+getRandomThree(listOfProducts);
+renderRandomThree(listOfRandomProductsToRender);
+
+let renderedElements = document.querySelectorAll('img');
+addEventListeners(renderedElements);
 resultButtonEl.addEventListener('click', handleResultClick)
 
-addEventListeners(renderedElements);
 
