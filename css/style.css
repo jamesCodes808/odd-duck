@@ -7,7 +7,7 @@
 
 #product-container {
     display: grid;
-    grid-template-columns: 400px 400px 400px;
+    grid-template-columns: 30% 30% 30%;
     grid-template-rows: 200px;
     justify-content: center;
     align-items: center;
