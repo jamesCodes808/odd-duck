@@ -4,26 +4,56 @@
 let listOfProducts = new Array();
 let listOfPrevRender = new Array;
 let listOfUsedProducts = new Array();
-let listOfRandomProductsToRender = new Array();
 
 // Global Variables 
 let voteCount = 25;
 
 // DOM Elements 
 let resultButtonEl = document.getElementById('results-button');
+let clearDataButtonEl = document.getElementById('clear-data-button');
 let resultsSectionEl = document.getElementById('results-container');
 let canvasEl = document.getElementById('chart');
 let productSectionEl = document.getElementById('product-container');
 let voteCountSectionEl = document.getElementById('voting-rounds-container');
+let voteNumber;
 
+// Chart
 let chart = null;
 
+// Local Storage States
+const productsFromlocalStorage = getProducts();
+// console.log('products from local storage', productsFromlocalStorage)
+let state = null;
 
-
-// get random number, if image get from random number, while loop run 6 times, use random number to fill array, if array does not already include the random product, push it to rendering array of 6 unique items, 
-
-// if product[1] !== product[2] && product[1] !== product[3]
-
+if (productsFromlocalStorage) {
+    console.log(`products exist`);
+    state = productsFromlocalStorage;
+} else {
+    console.log('products do not exist')
+    state = {
+        allProducts: [new Product('bag', 'bag.jpg'),
+        new Product('banana', 'banana.jpg'),
+        new Product('bathroom', 'bathroom.jpg'),
+        new Product('boots', 'boots.jpg'),
+        new Product('breakfast', 'breakfast.jpg'),
+        new Product('bubblegum', 'bubblegum.jpg'),
+        new Product('chair', 'chair.jpg'),
+        new Product('cthulhu', 'cthulhu.jpg'),
+        new Product('dog-duck', 'dog-duck.jpg'),
+        new Product('dragon', 'dragon.jpg'),
+        new Product('pen', 'pen.jpg'),
+        new Product('pet-sweep', 'pet-sweep.jpg'),
+        new Product('scissors', 'scissors.jpg'),
+        new Product('shark', 'shark.jpg'),
+        new Product('sweep', 'sweep.png'),
+        new Product('tauntaun', 'tauntaun.jpg'),
+        new Product('unicorn', 'unicorn.jpg'),
+        new Product('water-can', 'water-can.jpg'),
+        new Product('wine-glass', 'wine-glass.jpg'),],
+        currentProducts: [],
+        prevProducts: []
+    };
+}
 
 function Product(name, imagePath) {
     this.name = name;
@@ -33,27 +63,28 @@ function Product(name, imagePath) {
     listOfProducts.push(this);
 };
 
-Product.prototype.render = function () {
+function render(product) {
 
-    let voteNumber = document.createElement('h1');
+
     let img = document.createElement('img');
-    let p = document.createElement('p');
+    // let p = document.createElement('p');
 
-    voteNumber.innerText = voteCount;
 
-    img.src = this.imagePath;
-    img.id = this.name;
-    img.alt = this.name;
+
+
+    img.src = product.imagePath;
+    img.id = product.name;
+    img.alt = product.name;
     img.className = "products-displayed"
 
-    p.innerText = this.timesClicked;
+    // p.innerText = this.timesClicked;
 
-    this.timesShown++;
-
-    voteCountSectionEl.innerHTML = '';
-    voteCountSectionEl.appendChild(voteNumber);
-    img.appendChild(p);
+    product.timesShown++;
     productSectionEl.appendChild(img)
+
+
+    // img.appendChild(p);
+
 };
 
 new Product('bag', 'bag.jpg');
@@ -76,53 +107,66 @@ new Product('unicorn', 'unicorn.jpg');
 new Product('water-can', 'water-can.jpg');
 new Product('wine-glass', 'wine-glass.jpg');
 
-function getRandomProduct() {
-    return Math.floor(Math.random() * listOfProducts.length);
+function generateRandomProductIndex() {
+    return Math.floor(Math.random() * state.allProducts.length);
 };
 
 function compareArrays(firstArr, secondArr) {
     console.log(firstArr.some(product => secondArr.includes(product)))
 
     return firstArr.some(product => secondArr.includes(product));
+};
+
+function hasDuplicate(array) {
+    return new Set(array).size !== array.length;
 }
 
-function getRandomThree(arr) {
+function generateUniqueRandomProductIndex() {
+    let index = generateRandomProductIndex();
+    while (state.currentProducts.includes(index)) {
+        index = generateRandomProductIndex();
+    };
+    return index;
+};
 
-    console.log(`start of get randomThree func: ${listOfUsedProducts[0]}`)
-
-    listOfRandomProductsToRender = [];
-
+function generateProductsToRender() {
+    let listOfRandomGeneratedProducts = [];
     for (let i = 0; i < 3; i++) {
-        listOfRandomProductsToRender[i] = arr[getRandomProduct()];
-    };
+        listOfRandomGeneratedProducts[i] = state.allProducts[generateUniqueRandomProductIndex()];
+    }
 
-    while (listOfRandomProductsToRender[0] === listOfRandomProductsToRender[1]) {
-        listOfRandomProductsToRender[0] = arr[getRandomProduct()];
-    };
+    while (hasDuplicate(listOfRandomGeneratedProducts)) {
+        listOfRandomGeneratedProducts[0] = state.allProducts[generateRandomProductIndex()];
+        listOfRandomGeneratedProducts[1] = state.allProducts[generateRandomProductIndex()];
+        listOfRandomGeneratedProducts[2] = state.allProducts[generateRandomProductIndex()];
+    }
 
-    while (listOfRandomProductsToRender[1] === listOfRandomProductsToRender[2]) {
-        listOfRandomProductsToRender[1] = arr[getRandomProduct()];
-    };
+    listOfUsedProducts = [...listOfRandomGeneratedProducts]
 
-    while (listOfRandomProductsToRender[0] === listOfRandomProductsToRender[2]) {
-        listOfRandomProductsToRender[2] = arr[getRandomProduct()];
-    };
+    state.currentProducts = [];
+    for (let product of listOfRandomGeneratedProducts) {
+        state.currentProducts.push(product)
+    }
 
-
-
-    listOfUsedProducts = [...listOfRandomProductsToRender]
-}
+    return listOfRandomGeneratedProducts;
+};
 
 
 function renderRandomThree(array) {
-
+    setProducts(state);
+    // state = getProducts();
+    state.prevProducts = [];
     for (let product of array) {
         console.log(`product rendered: ${product.name}`)
-        product.render();
+        state.prevProducts.push(product);
+        render(product);
     };
 
-};
+    voteNumber = document.createElement('h1');
+    voteNumber.innerText = voteCount;
+    voteCountSectionEl.appendChild(voteNumber);
 
+};
 
 
 function addEventListeners(arr) {
@@ -132,48 +176,48 @@ function addEventListeners(arr) {
 };
 
 
-
+listOfPrevRender = [...listOfUsedProducts];
 
 function handleClick(event) {
     if (voteCount > 0) {
-        listOfProducts.forEach((product) => {
+        state.allProducts.forEach((product) => {
             if (event.target.id === product.name) {
                 product.timesClicked++;
             }
         })
 
-        listOfPrevRender = [...listOfUsedProducts];
+        voteCountSectionEl.innerHTML = '';
 
+        voteNumber = document.createElement('h1');
+        voteNumber.innerText = voteCount;
         voteCount -= 1;
+
         productSectionEl.innerHTML = '';
 
-        getRandomThree(listOfProducts);
-
-        while (compareArrays(listOfPrevRender, listOfRandomProductsToRender)) {
-            getRandomThree(listOfProducts);
+        let listOfItemsToRender = generateProductsToRender();
+        while (compareArrays(state.prevProducts, listOfItemsToRender)) {
+            listOfItemsToRender = generateProductsToRender();
         }
-        
-        renderRandomThree(listOfRandomProductsToRender)
 
-        console.log(`list of prev img in click func AFTER renderrando3 func called: ${listOfPrevRender[0]}`);
+        renderRandomThree(listOfItemsToRender);
+
 
         renderedElements = document.querySelectorAll('img');
         addEventListeners(renderedElements);
     }
 };
 
-function handleResultClick() {
+function handleResultBtnClick() {
 
     let clickData = [];
     let viewData = [];
     let nameValues = [];
 
-    for (let i = 0; i < listOfProducts.length; i++) {
-        nameValues.push(listOfProducts[i].name);
-        clickData.push(listOfProducts[i].timesClicked)
-        viewData.push(listOfProducts[i].timesShown)
-    }
-
+    for (let i = 0; i < state.allProducts.length; i++) {
+        nameValues.push(state.allProducts[i].name);
+        clickData.push(state.allProducts[i].timesClicked)
+        viewData.push(state.allProducts[i].timesShown)
+    };
 
     if (voteCount === 0) {
         chart = new Chart(canvasEl, {
@@ -203,12 +247,15 @@ function handleResultClick() {
     }
 };
 
+function handleClearBtnClick() {
+    removeProducts();
+}
 
-getRandomThree(listOfProducts);
-renderRandomThree(listOfRandomProductsToRender);
+renderRandomThree(generateProductsToRender());
 
 let renderedElements = document.querySelectorAll('img');
 addEventListeners(renderedElements);
-resultButtonEl.addEventListener('click', handleResultClick)
 
+resultButtonEl.addEventListener('click', handleResultBtnClick)
+clearDataButtonEl.addEventListener('click', handleClearBtnClick)
 
