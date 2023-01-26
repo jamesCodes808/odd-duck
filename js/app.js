@@ -22,7 +22,7 @@ let chart = null;
 
 // Local Storage States
 const productsFromlocalStorage = getProducts();
-// console.log('products from local storage', productsFromlocalStorage)
+
 let state = null;
 
 if (productsFromlocalStorage) {
@@ -31,25 +31,26 @@ if (productsFromlocalStorage) {
 } else {
     console.log('products do not exist')
     state = {
-        allProducts: [new Product('bag', 'bag.jpg'),
-        new Product('banana', 'banana.jpg'),
-        new Product('bathroom', 'bathroom.jpg'),
-        new Product('boots', 'boots.jpg'),
-        new Product('breakfast', 'breakfast.jpg'),
-        new Product('bubblegum', 'bubblegum.jpg'),
-        new Product('chair', 'chair.jpg'),
-        new Product('cthulhu', 'cthulhu.jpg'),
-        new Product('dog-duck', 'dog-duck.jpg'),
-        new Product('dragon', 'dragon.jpg'),
-        new Product('pen', 'pen.jpg'),
-        new Product('pet-sweep', 'pet-sweep.jpg'),
-        new Product('scissors', 'scissors.jpg'),
-        new Product('shark', 'shark.jpg'),
-        new Product('sweep', 'sweep.png'),
-        new Product('tauntaun', 'tauntaun.jpg'),
-        new Product('unicorn', 'unicorn.jpg'),
-        new Product('water-can', 'water-can.jpg'),
-        new Product('wine-glass', 'wine-glass.jpg'),],
+        allProducts: [
+            new Product('bag', 'bag.jpg'),
+            new Product('banana', 'banana.jpg'),
+            new Product('bathroom', 'bathroom.jpg'),
+            new Product('boots', 'boots.jpg'),
+            new Product('breakfast', 'breakfast.jpg'),
+            new Product('bubblegum', 'bubblegum.jpg'),
+            new Product('chair', 'chair.jpg'),
+            new Product('cthulhu', 'cthulhu.jpg'),
+            new Product('dog-duck', 'dog-duck.jpg'),
+            new Product('dragon', 'dragon.jpg'),
+            new Product('pen', 'pen.jpg'),
+            new Product('pet-sweep', 'pet-sweep.jpg'),
+            new Product('scissors', 'scissors.jpg'),
+            new Product('shark', 'shark.jpg'),
+            new Product('sweep', 'sweep.png'),
+            new Product('tauntaun', 'tauntaun.jpg'),
+            new Product('unicorn', 'unicorn.jpg'),
+            new Product('water-can', 'water-can.jpg'),
+            new Product('wine-glass', 'wine-glass.jpg'),],
         currentProducts: [],
         prevProducts: []
     };
@@ -67,23 +68,15 @@ function render(product) {
 
 
     let img = document.createElement('img');
-    // let p = document.createElement('p');
-
-
-
 
     img.src = product.imagePath;
     img.id = product.name;
     img.alt = product.name;
     img.className = "products-displayed"
 
-    // p.innerText = this.timesClicked;
 
     product.timesShown++;
-    productSectionEl.appendChild(img)
-
-
-    // img.appendChild(p);
+    productSectionEl.appendChild(img);
 
 };
 
@@ -154,7 +147,7 @@ function generateProductsToRender() {
 
 function renderRandomThree(array) {
     setProducts(state);
-    // state = getProducts();
+  
     state.prevProducts = [];
     for (let product of array) {
         console.log(`product rendered: ${product.name}`)
