@@ -1,3 +1,7 @@
+body {
+    background-color: #ECF39E;
+}
+
 #voting-rounds-container {
     text-align: center;
     margin: 30px auto;
@@ -14,9 +18,21 @@
 }
 
 .products-displayed {
-    height: 90%;
+    height: 100%;
     width: 50%;
     margin: 30px auto;
+    border-radius: 10px;
+    border: 2px solid #4F772D;
+    box-shadow: 0 0 0 1px #132A13;
+    transition: 500ms;
+}
+
+.products-displayed:hover {
+    box-shadow: 0 0 0 3px #132A13;
+}
+
+.products-displayed:active {
+    box-shadow: 0 0 0 3px #132A13;
 }
 
 #button-container {
