@@ -156,7 +156,7 @@ function renderRandomThree(array) {
     };
 
     voteNumber = document.createElement('h1');
-    voteNumber.innerText = voteCount;
+    voteNumber.innerText = `Voting Rounds: ${voteCount}`;
     voteCountSectionEl.appendChild(voteNumber);
 
 };
