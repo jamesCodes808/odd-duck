@@ -39,12 +39,12 @@ header>h1 {
     border-radius: 10px;
     border: 2px solid #4F772D;
     transition: 500ms;
-    box-shadow: 0 70px 63px -60px #132A13;
+    box-shadow: 0 40px 63px -60px #132A13;
 }
 
 .products-displayed:hover {
     transform: translateY(-10px);
-    box-shadow: 0 30px 63px -60px #132A13;
+    box-shadow: 0 80px 63px -60px #132A13;
 }
 
 .products-displayed:active {
@@ -59,6 +59,10 @@ header>h1 {
 
 #button-container button {
     padding: 5px;
+    border-radius: 5px;
+    border-color: #4F772D;
+    background-color: #344E41;
+    color: #DAD7CD;
 }
 
 #results-container {
